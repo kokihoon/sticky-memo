@@ -2,22 +2,19 @@
 <html>
   <head>
     <meta charset="UTF-8"/>
-    <title>Sticky Note</title>
+    <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 
     <style>
     li, textarea, a {
       -webkit-app-region: no-drag;
     }
-
     .container-fluid {
       padding: 0px;
     }
-
     .pager {
       margin: 2px;
     }
-
     html, body, .container-fluid {
       height: 100%;
     }
@@ -37,7 +34,6 @@
     <div class="container-fluid">
       <ul class="pager">
         <li class="previous"><a class="glyphicon glyphicon-plus" onclick="newSticky()"></a></li>
-
         <li class="next"><a class="glyphicon glyphicon-remove"  onclick="hideSticky()"></a></li>
         <li class="next"><a class="glyphicon glyphicon-trash"  onclick="deleteSticky()"></a></li>
       </ul>
@@ -52,28 +48,51 @@
     window.$ = window.jQuery = require(`C:/Users/kokihoon_KING/workspaceAtom/koki_memo3/node_modules/jquery/dist/jquery.js`);
     const {remote, ipcRenderer}  = require('electron');
     const {BrowserWindow} = remote;
-    var fs = require('fs');
+    const fs = require('fs');
 
     //상단 매뉴 버튼
     function newSticky(){
-       ipcRenderer.send('sync');
+       ipcRenderer.send('newSticky');
     }
+
+    //스티커 저장하고 닫기
     function hideSticky() {
-      var myElem = remote.getCurrentWindow('my-textarea');
+      let currentWindow = remote.getCurrentWindow();
+      let title = currentWindow.getTitle();
 
-      let opt = {
-        encoding : 'utf-8',
+      if(title != ""){
+        let content = $("#my-textarea").val();
+        fs.writeFileSync("./data/"+title, content);
+        window.close();
+      }else{
+        let content = $("#my-textarea").val();
+        let opt = {
+          encoding : 'utf-8',
+        }
+
+        ipcRenderer.send('saveClose', content);
       }
-      ipcRenderer.send('save', myElem);
     }
-
-    ipcRenderer.on('close', (event, arg) => {
-      console.log(arg)
+    ipcRenderer.on('saveCloseComplete', (event, msg) => {
       window.close();
     });
 
+    //스티커 저장하기
+    ipcRenderer.on('saveComplete', (event, title) => {
+      let currentWindow = remote.getCurrentWindow();
+      currentWindow.setTitle(title);
+
+      $(".glyphicon-trash").show();
+    });
+
+    //스티커 영구 삭제
     function deleteSticky(){
-      alert("삭제");
+      let currentWindow = remote.getCurrentWindow();
+      let title = currentWindow.getTitle();
+      if(confirm("영구 삭제하시겠습니까?")){
+          fs.unlinkSync("./data/"+title);
+          window.close();
+      }
     }
 
     //앱 사이즈 변경
@@ -84,8 +103,35 @@
       $("#my-textarea").height(bodyHeight - pagerHeight - 12);
     }
 
-    //앱 시작 상태
+    //앱 초기화
     $("document").ready(function(){
+      let currentWindow = remote.getCurrentWindow();
+      let title = currentWindow.getTitle();
+      // console.log(title);
+      if(title != ""){
+          let content = fs.readFileSync("./data/"+title,{
+            encoding : "utf8"
+          });
+          $("#my-textarea").val(content);
+      }else{
+        $(".glyphicon-trash").hide();
+      }
+
+      setInterval(function(){
+        let currentWindow = remote.getCurrentWindow();
+        let title = currentWindow.getTitle();
+
+        if(title != ""){
+          let content = $("#my-textarea").val();
+          fs.writeFileSync("./data/"+title, content);
+        }else{
+          let content = $("#my-textarea").val();
+          let opt = {
+            encoding : 'utf-8',
+          }
+          ipcRenderer.send('save', content);
+        }
+      }, 3000);
       setComponentRatio();
     })
     </script>
