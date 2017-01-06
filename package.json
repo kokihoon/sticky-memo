@@ -7,5 +7,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.1.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kokihoon/sticky-memo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kokihoon/sticky-memo/issues"
+  },
+  "homepage": "https://github.com/kokihoon/sticky-memo#readme"
 }

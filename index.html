@@ -1,122 +1,93 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <meta charset="UTF-8"/>
+    <title>Sticky Note</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
     <style>
-      #jb-header {
-        padding : 20px;
-        margin-bottom : 20px;
-        border : 1px solid #bcbcbc;
-      }
-      textarea {
-        -webkit-app-region: no-drag;
-      }
-      button {
-        -webkit-app-region: no-drag;
-        border: 1px solid #0a3c59;
-        background: #3e779d;
-        background: -webkit-gradient(linear, left top, left bottom, from(#65a9d7), to(#3e779d));
-        background: -webkit-linear-gradient(top, #65a9d7, #3e779d);
-        background: -moz-linear-gradient(top, #65a9d7, #3e779d);
-        background: -ms-linear-gradient(top, #65a9d7, #3e779d);
-        background: -o-linear-gradient(top, #65a9d7, #3e779d);
-        background-image: -ms-linear-gradient(top, #65a9d7 0%, #3e779d 100%);
-        padding: 10.5px 21px;
-        -webkit-border-radius: 6px;
-        -moz-border-radius: 6px;
-        border-radius: 6px;
-        -webkit-box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(255,255,255,0.4) 0 1px 0;
-        -moz-box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(255,255,255,0.4) 0 1px 0;
-        box-shadow: rgba(255,255,255,0.4) 0 1px 0, inset rgba(255,255,255,0.4) 0 1px 0;
-        text-shadow: #7ea4bd 0 1px 0;
-        color: #06426c;
-        font-size: 14px;
-        font-family: helvetica, serif;
-        text-decoration: none;
-        vertical-align: middle;
-      }
+    li, textarea, a {
+      -webkit-app-region: no-drag;
+    }
 
-      .button:hover  {
-        border: 1px solid #0a3c59;
-        text-shadow: #1e4158 0 1px 0;
-        background: #3e779d;
-        background: -webkit-gradient(linear, left top, left bottom, from(#65a9d7), to(#3e779d));
-        background: -webkit-linear-gradient(top, #65a9d7, #3e779d);
-        background: -moz-linear-gradient(top, #65a9d7, #3e779d);
-        background: -ms-linear-gradient(top, #65a9d7, #3e779d);
-        background: -o-linear-gradient(top, #65a9d7, #3e779d);
-        background-image: -ms-linear-gradient(top, #65a9d7 0%, #3e779d 100%);
-        color: #fff;
-       }
-      .button:active {
-        text-shadow: #1e4158 0 1px 0;
-        border: 1px solid #0a3c59;
-        background: #65a9d7;
-        background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#3e779d));
-        background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
-        background: -moz-linear-gradient(top, #3e779d, #65a9d7);
-        background: -ms-linear-gradient(top, #3e779d, #65a9d7);
-        background: -o-linear-gradient(top, #3e779d, #65a9d7);
-        background-image: -ms-linear-gradient(top, #3e779d 0%, #65a9d7 100%);
-        color: #fff;
-      }
+    .container-fluid {
+      padding: 0px;
+    }
+
+    .pager {
+      margin: 2px;
+    }
+
+    html, body, .container-fluid {
+      height: 100%;
+    }
+    .form-group{
+      margin: 0px;
+    }
+    textarea.form-control {
+      height: 100%;
+      resize: none;
+      padding: 2px;
+    }
     </style>
+
   </head>
-  <body style = "-webkit-app-region: drag">
-    <div id = "jb-header">
-      <button id = 'new_button' type = 'button' onclick = 'creat()' >+</button>
-      <button id = 'save' type = 'button' onclick = 'save()'>Save</button>
-      <button id = 'exit_1' type = 'button' onclick = 'exit()'>X</button>
+
+  <body style = "-webkit-app-region: drag" onresize="setComponentRatio()">
+    <div class="container-fluid">
+      <ul class="pager">
+        <li class="previous"><a class="glyphicon glyphicon-plus" onclick="newSticky()"></a></li>
+
+        <li class="next"><a class="glyphicon glyphicon-remove"  onclick="hideSticky()"></a></li>
+        <li class="next"><a class="glyphicon glyphicon-trash"  onclick="deleteSticky()"></a></li>
+      </ul>
+
+      <div class="form-group">
+        <textarea class="form-control" id="my-textarea" rows="1"></textarea>
+      </div>
+
     </div>
 
-    <div>
-      <textarea id = 'mytextarea' rows = '5' cols = '30'></textarea>
-    </div>
     <script type = "text/javascript">
-      const remote = require('electron').remote;
-      const ipcRenderer = require('electron').ipcRenderer;
-      var fs = require('fs');
-      var i = 0;
-      function creat(){
-         ipcRenderer.send('sync');
-      }
-      // function save() {
-      //   var myElem = document.getElementById('mytextarea');
-      //   fs.open('./1.txt', 'w', function(err, fd) {
-      //     fs.write(fd, myElem, 0, buf.length, null, function(err, written) {
-      //       if(err) throw err;
-      //
-      //       fs.close(fd, function() {
-      //
-      //       });
-      //     });
-      //   });
-      // }
+    window.$ = window.jQuery = require(`C:/Users/kokihoon_KING/workspaceAtom/koki_memo3/node_modules/jquery/dist/jquery.js`);
+    const {remote, ipcRenderer}  = require('electron');
+    const {BrowserWindow} = remote;
+    var fs = require('fs');
 
-      function exit() {
-        var window = remote.getCurrentWindow();
-        var myElem = document.getElementById('mytextarea').value;
-        alert(myElem);
-        for(var j = 0; j < 1000; j++) {
-          var filename = './' +(++i) + '.txt';
-          if(!fs.stat(filename)) {
-                fs.writeFile(filename, myElem, 'utf8');
+    //상단 매뉴 버튼
+    function newSticky(){
+       ipcRenderer.send('sync');
+    }
+    function hideSticky() {
+      var myElem = remote.getCurrentWindow('my-textarea');
 
-                window.close()
-                i = 0;
-                // break;
-          }
-        /*  path.exists(filename, function(exists) {
-            if (!exists) {
-              fs.writeFile(filename, myElem, 'utf8', function(err){
-                window.close()
-                i = 0;
-              });
-            }
-          });*/
-        }
+      let opt = {
+        encoding : 'utf-8',
       }
+      ipcRenderer.send('save', myElem);
+    }
+
+    ipcRenderer.on('close', (event, arg) => {
+      console.log(arg)
+      window.close();
+    });
+
+    function deleteSticky(){
+      alert("삭제");
+    }
+
+    //앱 사이즈 변경
+    function setComponentRatio(){
+      let bodyHeight = $("body").height();
+      let pagerHeight = $(".pager").height();
+
+      $("#my-textarea").height(bodyHeight - pagerHeight - 12);
+    }
+
+    //앱 시작 상태
+    $("document").ready(function(){
+      setComponentRatio();
+    })
     </script>
 
   </body>
