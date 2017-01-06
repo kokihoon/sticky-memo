@@ -11,7 +11,6 @@ app.on('ready', function(){
 
       for(file in files){
         createWindow(files[file]);
-
       }
     }else{
       // console.log("no files");

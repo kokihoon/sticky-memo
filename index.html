@@ -5,8 +5,11 @@
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 
+    <!-- <script src="./node_modules/medium-editor/dist/js/medium-editor.min.js"></script>
+    <link rel="stylesheet" href="./node_modules/medium-editor/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8"> -->
+
     <style>
-    li, textarea, a {
+    li, textarea, a, textarea {
       -webkit-app-region: no-drag;
     }
     .container-fluid {
@@ -115,27 +118,25 @@
           $("#my-textarea").val(content);
       }else{
         $(".glyphicon-trash").hide();
-      }
 
-      setInterval(function(){
-        let currentWindow = remote.getCurrentWindow();
-        let title = currentWindow.getTitle();
-
-        if(title != ""){
-          let content = $("#my-textarea").val();
-          fs.writeFileSync("./data/"+title, content);
-        }else{
-          let content = $("#my-textarea").val();
-          let opt = {
-            encoding : 'utf-8',
-          }
-          ipcRenderer.send('save', content);
-        }
-      }, 3000);
+    //   setInterval(function(){
+    //     let currentWindow = remote.getCurrentWindow();
+    //     let title = currentWindow.getTitle();
+    //
+    //     if(title != ""){
+    //       let content = $("#my-textarea").val();
+    //       fs.writeFileSync("./data/"+title, content);
+    //     }else{
+    //       let content = $("#my-textarea").val();
+    //       ipcRenderer.send('save', content);
+    //     }
+    //   }, 60000);
+    
       setComponentRatio();
-    })
+     }
+   })
     </script>
-
+    <!-- <script>var editor = new MediumEditor('#my-textarea');</script> -->
   </body>
 
 </html>
